@@ -1,5 +1,6 @@
-# Doc corpus is pulled, not committed: run `python3 refresh.py` after cloning
+# Doc corpus is pulled, not committed: run ./install.sh (or python3 refresh.py) after cloning
 *.md
 !README.md
+!INDEX.md
 !skills/**/*.md
 __pycache__/
