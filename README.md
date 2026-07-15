@@ -2,11 +2,13 @@
 
 Sync pipeline for a local mirror of the TikTok Shop Partner Center doc portal (Partner Guide, Developer Guide, API Reference, Webhooks), fetched from TikTok's public document API. Grounds the `tiktok-tsp` Claude Code skill.
 
-The doc `.md` files are **not committed** — `manifest.json` (document_id → filename) is the source of truth. After cloning, hydrate the corpus:
+The doc `.md` files are **not committed** — `manifest.json` (document_id → filename) is the source of truth. Setup after cloning (any location):
 
 ```sh
-python3 refresh.py
+./install.sh   # links the Claude Code skill into ~/.claude/skills and hydrates the corpus
 ```
+
+Or manually: `python3 refresh.py` to hydrate, and symlink `skills/tiktok-tsp` into your skills directory.
 
 ## Commands
 
@@ -19,12 +21,6 @@ Stdlib-only Python 3, no auth required. Each mirrored doc carries frontmatter: `
 
 ## Claude Code skill
 
-`skills/tiktok-tsp/SKILL.md` is the skill that grounds answers in this corpus. Activate it by symlinking into your user skills:
-
-```sh
-ln -s ~/code/tiktok-docs/skills/tiktok-tsp ~/.claude/skills/tiktok-tsp
-```
-
-(The skill expects the corpus at `~/code/tiktok-docs`.)
+`skills/tiktok-tsp/SKILL.md` grounds answers in this corpus. It locates the corpus relative to its own real path, so any clone location works. `install.sh` respects `$CLAUDE_SKILLS_DIR` if your skills live somewhere other than `~/.claude/skills`.
 
 Doc content is TikTok's — keep this repo private and the corpus local.
