@@ -1,0 +1,172 @@
+#!/usr/bin/env python3
+"""Refresh the local TikTok Partner Center doc corpus from the public API.
+
+Usage:
+  ./refresh.py                  # re-fetch every doc in manifest.json, report changes
+  ./refresh.py --search <text>  # search the full Partner Center tree for docs to add
+  ./refresh.py --add <id-or-url> [...]  # add doc(s) to the manifest and fetch them
+  ./refresh.py --add-tree <id-or-url>   # add a section: the doc/dir plus all descendants
+
+Docs are written as <title>.md with a frontmatter block carrying the document_id,
+section path, TikTok's update_time, and the retrieved date. manifest.json maps
+document_id -> filename and is the source of truth for what's in the corpus.
+"""
+
+import json
+import re
+import sys
+import urllib.request
+from datetime import date, datetime, timezone
+from pathlib import Path
+
+BASE = "https://partner.tiktokshop.com/api/v1/document"
+# 3 = Partner Center docs, 2 = TikTok Shop developer docs
+WORKSPACES = [3, 2]
+def params(ws):
+    return f"workspace_id={ws}&aid=359713&locale=en-US"
+ROOT = Path(__file__).resolve().parent
+MANIFEST = ROOT / "manifest.json"
+
+
+def get(url):
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    with urllib.request.urlopen(req, timeout=30) as r:
+        body = json.load(r)
+    if body.get("code") != 0:
+        raise SystemExit(f"API error for {url}: {body.get('message')}")
+    return body["data"]
+
+
+def flatten_trees():
+    docs = {}
+    parents = {}  # every node (docs and dirs) -> parent_id, for --add-tree
+    slugs = {}
+    for ws in WORKSPACES:
+        nodes = {}
+
+        def walk(items):
+            for x in items:
+                nodes[x["document_id"]] = x
+                walk(x.get("children") or [])
+
+        walk(get(f"{BASE}/tree?{params(ws)}")["document_tree"])
+
+        def section(x):
+            parts = []
+            p = nodes.get(x.get("parent_id"))
+            while p:
+                parts.append(p["name"].strip())
+                p = nodes.get(p.get("parent_id"))
+            return " > ".join(reversed(parts))
+
+        for i, x in nodes.items():
+            parents.setdefault(i, x.get("parent_id", ""))
+            if x.get("document_path"):
+                slugs.setdefault(x["document_path"], i)
+            if not x["is_dir"] and i not in docs:
+                docs[i] = {
+                    "name": x["name"].strip(),
+                    "section": section(x),
+                    "update_time": x.get("update_time", ""),
+                    "slug": x.get("document_path", ""),
+                    "ws": ws,
+                }
+    return docs, parents, slugs
+
+
+def safe_filename(title):
+    return re.sub(r'[/\\:]', " - ", title).strip() + ".md"
+
+
+def write_doc(doc_id, meta, filename):
+    detail = get(f"{BASE}/detail?document_id={doc_id}&{params(meta['ws'])}")
+    updated = ""
+    if meta.get("update_time"):
+        updated = datetime.fromtimestamp(int(meta["update_time"]), tz=timezone.utc).date().isoformat()
+    front = (
+        f"---\ndocument_id: {doc_id}\n"
+        f"workspace: {meta['ws']}\n"
+        f"section: {meta['section']}\n"
+        f"tiktok_updated: {updated}\n"
+        f"retrieved: {date.today().isoformat()}\n---\n\n"
+    )
+    body = f"# {detail['title']}\n\n{detail['content']}\n"
+    path = ROOT / filename
+    old = path.read_text() if path.exists() else None
+    old_body = old.split("---\n\n", 1)[-1] if old else None
+    if old != front + body:
+        path.write_text(front + body)
+    return "unchanged" if old_body == body else ("updated" if old else "created")
+
+
+def main():
+    manifest = json.loads(MANIFEST.read_text()) if MANIFEST.exists() else {}
+    args = sys.argv[1:]
+    tree, parents, slugs = flatten_trees()
+
+    def resolve(arg):
+        raw = arg.rstrip("/").split("/")[-1]
+        return slugs.get(raw, raw)
+
+    def descendants(root_id):
+        out = []
+        for i in tree:
+            p = i
+            while p:
+                if p == root_id:
+                    out.append(i)
+                    break
+                p = parents.get(p, "")
+        return out
+
+    if args[:1] == ["--search"]:
+        q = " ".join(args[1:]).lower()
+        hits = [(i, m) for i, m in tree.items() if q in m["name"].lower() or q in m["section"].lower()]
+        for i, m in hits:
+            tag = " [in corpus]" if i in manifest else ""
+            print(f"{i}  {m['name']}  ({m['section']}){tag}")
+        print(f"{len(hits)} match(es) of {len(tree)} docs")
+        return
+
+    if args[:1] in (["--add"], ["--add-tree"]):
+        # URLs use the doc's slug (document_path), which may differ from its tree ID
+        ids = []
+        for a in args[1:]:
+            doc_id = resolve(a)
+            if args[0] == "--add-tree":
+                sub = descendants(doc_id)
+                if not sub:
+                    print(f"SKIP {a}: no docs found under that node")
+                ids += sub
+            else:
+                ids.append(doc_id)
+        for doc_id in ids:
+            if doc_id not in tree:
+                print(f"SKIP {doc_id}: not found in any workspace tree (3=Partner Center, 2=developer docs)")
+                continue
+            filename = manifest.get(doc_id) or safe_filename(tree[doc_id]["name"])
+            if filename in (f for i, f in manifest.items() if i != doc_id):
+                filename = safe_filename(f"{tree[doc_id]['name']} ({doc_id[-6:]})")
+            manifest[doc_id] = filename
+            print(f"{write_doc(doc_id, tree[doc_id], filename)}: {filename}")
+        MANIFEST.write_text(json.dumps(manifest, indent=2) + "\n")
+        return
+
+    if args:
+        raise SystemExit(__doc__)
+
+    counts = {}
+    for doc_id, filename in manifest.items():
+        if doc_id not in tree:
+            print(f"GONE from Partner Center (kept locally): {filename}")
+            counts["gone"] = counts.get("gone", 0) + 1
+            continue
+        status = write_doc(doc_id, tree[doc_id], filename)
+        counts[status] = counts.get(status, 0) + 1
+        if status != "unchanged":
+            print(f"{status}: {filename}")
+    print(" ".join(f"{v} {k}" for k, v in sorted(counts.items())) or "manifest empty")
+
+
+if __name__ == "__main__":
+    main()
