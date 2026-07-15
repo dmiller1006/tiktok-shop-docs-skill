@@ -25,24 +25,23 @@ Use `$ROOT` wherever the corpus path is needed below. If the corpus has no `.md`
 
 ## Finding the right doc
 
-The corpus mirrors the ENTIRE Partner Center doc portal (~770 files: all four tabs plus Changelog and Terms & Policies). `INDEX.md` is an auto-generated listing of every doc grouped by portal section. Two lookup paths:
+**The index of the entire corpus is `$ROOT/INDEX.md`** — every doc, grouped by portal section, auto-regenerated on each refresh. Read it whenever you're unsure which file covers a topic; it IS the skill's doc index. The corpus mirrors the ENTIRE Partner Center portal:
 
-1. **TSP process questions** — use the curated index below; those files are the partner-ops core.
-2. **Developer Guide / API Reference / Webhooks questions** — search instead:
-   - `grep -il '<term>' $ROOT/*.md` for content, browse `INDEX.md` by section, or match filenames — API docs are named after their endpoint ("Get Order Detail.md", "Ship Package.md"); webhook docs after their event.
-   - Each file's frontmatter `section:` gives its place in the Partner Center tree (e.g. `API Reference > Order`, `Developer Guide > Get started`).
-
-Sections in the corpus (complete portal mirror):
-- **Partner Guide** (112 docs) — partner types, onboarding, TSP console guides, seller/creator collaboration, CAP/MCN material, monthly innovation notes; the curated list below is the TSP-ops core of this section
+- **Partner Guide** (112 docs) — partner types, onboarding, TSP console guides, seller/creator collaboration, CAP/MCN material, monthly innovation notes
 - **Developer Guide** (85 docs) — get started, onboarding, authorization, API concepts, signing requests, rate limits, developer tools, use-case guides, App Store development, SDK, widgets
 - **API Reference** (315 docs) — one file per endpoint, grouped by domain (product, order, fulfillment, logistics, finance, promotion, affiliate, returns…)
 - **Webhooks** (44 docs) — one file per event, including Affiliate Creator events
-- **Changelog** (~173 docs) — dated API/product change announcements; check here for deprecations and behavior changes
-- **Terms and Policies** (~39 docs) — partner/developer ToS, privacy, violation management (several languages)
+- **Changelog** (173 docs) — dated API/product change announcements; check here for deprecations and behavior changes
+- **Terms and Policies** (39 docs) — partner/developer ToS, privacy, violation management (several languages)
 
-## Curated TSP doc index
+Lookup order:
+1. **`INDEX.md`** to find candidate files by section — API docs are named after their endpoint ("Get Order Detail.md"), webhook docs after their event.
+2. **`grep -il '<term>' $ROOT/*.md`** when the topic could live anywhere.
+3. Each file's frontmatter `section:` confirms its place in the portal tree (e.g. `API Reference > Order`).
 
-Read only the files relevant to the question (they're small, 1.5–13 KB each).
+## TSP quick-reference (subset of Partner Guide)
+
+Hand-written summaries for the TSP-ops core, since these filenames are less self-explanatory. Docs are small (1.5–13 KB) — read the relevant ones.
 
 ### Services & App/Service Store
 - `Create and publish a service.md` — what a TSP service is; public vs custom services; creating/publishing
