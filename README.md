@@ -1,6 +1,8 @@
 # tiktok-docs
 
-Sync pipeline for a local mirror of the TikTok Shop Partner Center doc portal (Partner Guide, Developer Guide, API Reference, Webhooks), fetched from TikTok's public document API. Grounds the `tiktok-tsp` Claude Code skill.
+Local mirror of TikTok Shop's Partner Center docs + a Claude Code skill that answers TSP/API questions from them, with citations.
+
+Covers all four portal tabs (Partner Guide, Developer Guide, API Reference, Webhooks), fetched from TikTok's public document API.
 
 The doc `.md` files are **not committed** — `manifest.json` (document_id → filename) is the source of truth. Setup after cloning (any location):
 
