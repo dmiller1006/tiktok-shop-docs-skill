@@ -19,6 +19,8 @@ Or manually: `python3 refresh.py` to hydrate, and symlink `skills/tiktok-tsp` in
 - `python3 refresh.py --add <url-or-id>` — add a single page to the manifest and fetch it (docv2 URLs can be pasted as-is)
 - `python3 refresh.py --add-tree <url-or-id>` — add a page or folder plus all its descendants
 
+[`INDEX.md`](INDEX.md) is the committed table of contents — every mirrored doc grouped by portal section. It regenerates on every `refresh.py` run; commit it together with `manifest.json` whenever coverage changes. `refresh.py --gaps` diffs the manifest against TikTok's live tree to prove nothing is missing.
+
 Stdlib-only Python 3, no auth required. Each mirrored doc carries frontmatter: `document_id`, `section` (its path in the portal sidebar), `tiktok_updated` (TikTok's edit date), and `retrieved` (last verified against TikTok). Commit `manifest.json` changes after adding docs.
 
 ## Claude Code skill
