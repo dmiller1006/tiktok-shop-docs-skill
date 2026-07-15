@@ -113,6 +113,7 @@ def write_index(tree, manifest):
             lines.append(f"- `{filename}`")
         lines.append("")
     (ROOT / "INDEX.md").write_text("\n".join(lines))
+    print(f"INDEX.md regenerated: {sum(len(v) for v in groups.values())} docs in {len(groups)} sections")
 
 
 def main():
