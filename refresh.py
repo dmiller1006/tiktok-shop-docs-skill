@@ -6,6 +6,7 @@ Usage:
   ./refresh.py --search <text>  # search the full Partner Center tree for docs to add
   ./refresh.py --add <id-or-url> [...]  # add doc(s) to the manifest and fetch them
   ./refresh.py --add-tree <id-or-url>   # add a section: the doc/dir plus all descendants
+  ./refresh.py --gaps           # list portal docs NOT yet in the mirror, by section
 
 Docs are written as <title>.md with a frontmatter block carrying the document_id,
 section path, TikTok's update_time, and the retrieved date. manifest.json maps
@@ -135,6 +136,22 @@ def main():
                     break
                 p = parents.get(p, "")
         return out
+
+    if args[:1] == ["--gaps"]:
+        # primary workspace only: the legacy workspace duplicates superseded docs
+        missing = {i: m for i, m in tree.items() if i not in manifest and m["ws"] == WORKSPACES[0]}
+        by_top = {}
+        for i, m in missing.items():
+            by_top.setdefault(m["section"].split(" > ")[0] or "(top)", []).append((m["name"], i))
+        for top in sorted(by_top, key=lambda k: -len(by_top[k])):
+            print(f"{len(by_top[top]):4}  {top}")
+            for name, i in sorted(by_top[top])[:5]:
+                print(f"        {i}  {name}")
+            if len(by_top[top]) > 5:
+                print(f"        … {len(by_top[top]) - 5} more")
+        total = sum(1 for m in tree.values() if m["ws"] == WORKSPACES[0])
+        print(f"mirrored {total - len(missing)} of {total} portal docs; {len(missing)} missing")
+        return
 
     if args[:1] == ["--search"]:
         q = " ".join(args[1:]).lower()

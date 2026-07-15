@@ -25,7 +25,7 @@ Use `$ROOT` wherever the corpus path is needed below. If the corpus has no `.md`
 
 ## Finding the right doc
 
-The corpus mirrors the ENTIRE Partner Center doc portal (~555 files, all four tabs). `INDEX.md` is an auto-generated listing of every doc grouped by portal section. Two lookup paths:
+The corpus mirrors the ENTIRE Partner Center doc portal (~770 files: all four tabs plus Changelog and Terms & Policies). `INDEX.md` is an auto-generated listing of every doc grouped by portal section. Two lookup paths:
 
 1. **TSP process questions** — use the curated index below; those files are the partner-ops core.
 2. **Developer Guide / API Reference / Webhooks questions** — search instead:
@@ -37,6 +37,8 @@ Sections in the corpus (complete portal mirror):
 - **Developer Guide** (85 docs) — get started, onboarding, authorization, API concepts, signing requests, rate limits, developer tools, use-case guides, App Store development, SDK, widgets
 - **API Reference** (315 docs) — one file per endpoint, grouped by domain (product, order, fulfillment, logistics, finance, promotion, affiliate, returns…)
 - **Webhooks** (44 docs) — one file per event, including Affiliate Creator events
+- **Changelog** (~173 docs) — dated API/product change announcements; check here for deprecations and behavior changes
+- **Terms and Policies** (~39 docs) — partner/developer ToS, privacy, violation management (several languages)
 
 ## Curated TSP doc index
 
