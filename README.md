@@ -17,4 +17,14 @@ python3 refresh.py
 
 Stdlib-only Python 3, no auth required. Each mirrored doc carries frontmatter: `document_id`, `section` (its path in the portal sidebar), `tiktok_updated` (TikTok's edit date), and `retrieved` (last verified against TikTok). Commit `manifest.json` changes after adding docs.
 
+## Claude Code skill
+
+`skills/tiktok-tsp/SKILL.md` is the skill that grounds answers in this corpus. Activate it by symlinking into your user skills:
+
+```sh
+ln -s ~/code/tiktok-docs/skills/tiktok-tsp ~/.claude/skills/tiktok-tsp
+```
+
+(The skill expects the corpus at `~/code/tiktok-docs`.)
+
 Doc content is TikTok's — keep this repo private and the corpus local.

@@ -1,3 +1,4 @@
 # Doc corpus is pulled, not committed: run `python3 refresh.py` after cloning
 *.md
 !README.md
+!skills/**/*.md
