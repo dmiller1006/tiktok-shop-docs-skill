@@ -7,10 +7,13 @@ Covers all four portal tabs (Partner Guide, Developer Guide, API Reference, Webh
 The doc `.md` files are **not committed** — `manifest.json` (document_id → filename) is the source of truth. Setup after cloning (any location):
 
 ```sh
-./install.sh                 # global skill (~/.claude/skills) + hydrate corpus
-./install.sh --project DIR   # install the skill into DIR/.claude/skills instead
-./install.sh --skip-skill    # hydrate the corpus only, don't install the skill
+./install.sh                 # prompts: global / project / skip, then hydrates corpus
+./install.sh --project DIR   # non-interactive: install the skill into DIR/.claude/skills
+./install.sh --skip-skill    # non-interactive: hydrate the corpus only
+./install.sh --global        # non-interactive: install to ~/.claude/skills
 ```
+
+Run with no flag and it prompts where to install (defaults to global; falls back to global automatically when not attached to a terminal, e.g. in CI).
 
 The skill is copied (not symlinked), so `git pull` never changes it silently — re-run `install.sh` to apply skill updates. `$CLAUDE_SKILLS_DIR` overrides the global skills dir.
 

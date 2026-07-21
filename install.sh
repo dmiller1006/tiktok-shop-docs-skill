@@ -17,13 +17,32 @@ ROOT=$(cd "$(dirname "$0")" && pwd)
 SKILLS_DIR="${CLAUDE_SKILLS_DIR:-$HOME/.claude/skills}"
 INSTALL_SKILL=1
 
+set_project() {
+  [ -n "$1" ] || { echo "error: project directory required" >&2; exit 1; }
+  [ -d "$1" ] || { echo "error: no such directory: $1" >&2; exit 1; }
+  SKILLS_DIR="$(cd "$1" && pwd)/.claude/skills"
+}
+
 case "$1" in
   --skip-skill) INSTALL_SKILL=0 ;;
-  --project)
-    [ -n "$2" ] || { echo "error: --project needs a directory" >&2; exit 1; }
-    [ -d "$2" ] || { echo "error: no such directory: $2" >&2; exit 1; }
-    SKILLS_DIR="$(cd "$2" && pwd)/.claude/skills" ;;
-  --global|"") ;;
+  --project) set_project "$2" ;;
+  --global) ;;
+  "")
+    # No flag: prompt interactively when attached to a terminal, else default global.
+    if [ -t 0 ]; then
+      echo "Where should the tiktok-shop-docs skill be installed?"
+      echo "  1) Global   (${CLAUDE_SKILLS_DIR:-$HOME/.claude/skills})"
+      echo "  2) Project  (a project's .claude/skills)"
+      echo "  3) Skip     (hydrate the corpus only)"
+      printf "Choice [1]: "
+      read -r choice
+      case "$choice" in
+        ""|1) ;;
+        2) printf "Project directory: "; read -r projdir; set_project "$projdir" ;;
+        3) INSTALL_SKILL=0 ;;
+        *) echo "error: invalid choice '$choice'" >&2; exit 1 ;;
+      esac
+    fi ;;
   *) echo "error: unknown option '$1' (see usage in this script)" >&2; exit 1 ;;
 esac
 
