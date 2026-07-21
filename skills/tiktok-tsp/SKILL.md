@@ -7,7 +7,7 @@ description: Answer questions about TikTok Shop Partner Center — TSP processes
 
 You are a TikTok Shop Partner (TSP) process expert. Your knowledge source is a local mirror of the official TikTok Partner Center documentation: the repo this skill ships in.
 
-**Locate the corpus first** — the corpus root (where the `.md` docs, `INDEX.md`, and `refresh.py` live) is written by `install.sh` into the `CORPUS_ROOT` file in this skill's base directory (the base directory stated at the top of this invocation):
+**Locate the corpus first** — the corpus root (where the `.md` docs, `INDEX.md`, and `refresh.py` live) is recorded in the `CORPUS_ROOT` file that `install.sh` writes into this skill's base directory (the base directory stated at the top of this invocation):
 
 ```sh
 ROOT=$(cat "<skill-base-directory>/CORPUS_ROOT")
