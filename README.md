@@ -7,10 +7,10 @@ Covers all four portal tabs (Partner Guide, Developer Guide, API Reference, Webh
 The doc `.md` files are **not committed** — `manifest.json` (document_id → filename) is the source of truth. Setup after cloning (any location):
 
 ```sh
-./install.sh   # links the Claude Code skill into ~/.claude/skills and hydrates the corpus
+./install.sh   # copies the Claude Code skill into ~/.claude/skills and hydrates the corpus
 ```
 
-Or manually: `python3 refresh.py` to hydrate, and symlink `skills/tiktok-tsp` into your skills directory.
+Or manually: `python3 refresh.py` to hydrate, and run install.sh, which copies `skills/tiktok-shop-docs` into your skills directory.
 
 ## Commands
 
@@ -25,6 +25,6 @@ Stdlib-only Python 3, no auth required. Each mirrored doc carries frontmatter: `
 
 ## Claude Code skill
 
-`skills/tiktok-tsp/SKILL.md` grounds answers in this corpus. It locates the corpus relative to its own real path, so any clone location works. `install.sh` respects `$CLAUDE_SKILLS_DIR` if your skills live somewhere other than `~/.claude/skills`.
+`skills/tiktok-shop-docs/SKILL.md` grounds answers in this corpus. It reads the corpus path from a CORPUS_ROOT file written at install time, so any clone location works. `install.sh` respects `$CLAUDE_SKILLS_DIR` if your skills live somewhere other than `~/.claude/skills`.
 
 Doc content is TikTok's and is not committed — this repo ships only the tooling and index; hydrate the corpus locally with `refresh.py`.
