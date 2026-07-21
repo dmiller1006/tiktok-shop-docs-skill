@@ -7,10 +7,12 @@ Covers all four portal tabs (Partner Guide, Developer Guide, API Reference, Webh
 The doc `.md` files are **not committed** — `manifest.json` (document_id → filename) is the source of truth. Setup after cloning (any location):
 
 ```sh
-./install.sh   # copies the Claude Code skill into ~/.claude/skills and hydrates the corpus
+./install.sh                 # global skill (~/.claude/skills) + hydrate corpus
+./install.sh --project DIR   # install the skill into DIR/.claude/skills instead
+./install.sh --skip-skill    # hydrate the corpus only, don't install the skill
 ```
 
-Or manually: `python3 refresh.py` to hydrate, and run install.sh, which copies `skills/tiktok-shop-docs` into your skills directory.
+The skill is copied (not symlinked), so `git pull` never changes it silently — re-run `install.sh` to apply skill updates. `$CLAUDE_SKILLS_DIR` overrides the global skills dir.
 
 ## Commands
 
