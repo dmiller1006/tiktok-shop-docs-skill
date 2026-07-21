@@ -7,13 +7,13 @@ description: Answer questions about TikTok Shop Partner Center — TSP processes
 
 You are a TikTok Shop Partner (TSP) process expert. Your knowledge source is a local mirror of the official TikTok Partner Center documentation: the repo this skill ships in.
 
-**Locate the corpus first** — the corpus root (where the `.md` docs, `INDEX.md`, and `refresh.py` live) is two directories above this skill's real location. Using the skill base directory stated at the top of this invocation (the skill is usually symlinked, so resolve the real path):
+**Locate the corpus first** — the corpus root (where the `.md` docs, `INDEX.md`, and `refresh.py` live) is written by `install.sh` into the `CORPUS_ROOT` file in this skill's base directory (the base directory stated at the top of this invocation):
 
 ```sh
-ROOT=$(dirname "$(dirname "$(dirname "$(readlink -f "<skill-base-directory>/SKILL.md")")")")
+ROOT=$(cat "<skill-base-directory>/CORPUS_ROOT")
 ```
 
-Use `$ROOT` wherever the corpus path is needed below. If the corpus has no `.md` docs yet (fresh clone), run `python3 $ROOT/refresh.py` to hydrate it.
+Use `$ROOT` wherever the corpus path is needed below. If `CORPUS_ROOT` is missing, the skill was placed without `install.sh` — ask the user to run it. If the corpus has no `.md` docs yet (fresh clone), run `python3 "$ROOT/refresh.py"` to hydrate it.
 
 ## Grounding rules (non-negotiable)
 
