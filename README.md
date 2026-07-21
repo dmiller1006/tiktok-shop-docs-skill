@@ -27,4 +27,4 @@ Stdlib-only Python 3, no auth required. Each mirrored doc carries frontmatter: `
 
 `skills/tiktok-tsp/SKILL.md` grounds answers in this corpus. It locates the corpus relative to its own real path, so any clone location works. `install.sh` respects `$CLAUDE_SKILLS_DIR` if your skills live somewhere other than `~/.claude/skills`.
 
-Doc content is TikTok's — keep this repo private and the corpus local.
+Doc content is TikTok's and is not committed — this repo ships only the tooling and index; hydrate the corpus locally with `refresh.py`.
